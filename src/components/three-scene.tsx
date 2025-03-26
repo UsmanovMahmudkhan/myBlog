@@ -4,40 +4,34 @@ import React, { useRef } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Text3D, OrbitControls, Float, PerspectiveCamera } from '@react-three/drei'
 import * as THREE from 'three'
+import { JSX } from 'react'
 
-function RotatingBox(props: any) {
+type MeshProps = JSX.IntrinsicElements['mesh']
+type Text3DProps = JSX.IntrinsicElements['mesh'] & { color?: string; emissive?: string }
+
+function RotatingBox(props: MeshProps) {
   const mesh = useRef<THREE.Mesh>(null!)
 
-  useFrame((state, delta) => {
-    mesh.current.rotation.x += delta * 0.2
-    mesh.current.rotation.y += delta * 0.3
+  useFrame((_, delta) => {
+    if (mesh.current) {
+      mesh.current.rotation.x += delta * 0.2
+      mesh.current.rotation.y += delta * 0.3
+    }
   })
 
   return (
-    <mesh
-      {...props}
-      ref={mesh}
-      castShadow
-    >
+    <mesh {...props} ref={mesh} castShadow>
       <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial
-        color={props.color}
-        metalness={0.8}
-        roughness={0.2}
-      />
+      <meshStandardMaterial color={(props as any).color} metalness={0.8} roughness={0.2} />
     </mesh>
   )
 }
 
-function FloatingText(props: any) {
+function FloatingText(props: Text3DProps) {
   const textRef = useRef<THREE.Mesh>(null!)
 
   return (
-    <Float
-      speed={2} // Animation speed
-      rotationIntensity={0.2} // XYZ rotation intensity
-      floatIntensity={0.5} // Up/down float intensity
-    >
+    <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
       <Text3D
         ref={textRef}
         font="/fonts/helvetiker_regular.typeface.json"
